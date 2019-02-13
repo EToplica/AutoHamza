@@ -1,0 +1,161 @@
+﻿@model List<AutoHamza.Models.ViewModel.VM_VeturaWithLlojet>
+
+@{
+    ViewBag.Title = "Veturat";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+    var arr = []
+
+    $(document).ready(function () {
+        $.ajax({
+            method: 'GET',
+            url: 'http://localhost:62153/Brendis/GetAllVeturasByBrandID/' + @ViewBag.id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                arr = data;
+                init(data);
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    });
+
+    function init(data) {
+        var list = document.getElementById("accordion");
+
+        for (var i = 0; i < arr.length; i++) {
+            list.innerHTML += "<div class='panel panel-default'>" +
+                "<div class='panel-heading'>" +
+                "<a data-toggle='collapse' data-parent='#accordion' href='#collapse" + i + "' style='text-decoration:none;'>" +
+                "<h4 class='panel-title' style='padding:0'>" +
+                arr[i].Vetura.Emri +
+                "</h4>" +
+                "</a>" +
+                "</div>" +
+                "<div id='collapse" + i + "' class='panel-collapse collapse'>" +
+                "<div class='panel-body' id='content" + i + "'></div>" +
+                "</div>" +
+                "</div>";
+        }
+
+        initContent(data);
+    }
+
+    function initContent(data) {
+
+        for (var j = 0; j < data.length; j++) {
+            if (data[j].llojetlist.length > 0) {
+                for (var i = 0; i < data[j].llojetlist.length; i++) {
+                    document.getElementById("content" + j).innerHTML += "<div onclick='gotoLlojiVeturesStock(" + data[j].llojetlist[i].LlojiID + ")' class='divLloji'>" +
+                        "<img class='card-img-top' style='width:100px;height:100px;cursor: hand;' src='../../Content/llojetveturaveimages/" + data[j].llojetlist[i].Foto + "' />" +
+                        "<p class='card-text' align='center'>" + data[j].llojetlist[i].Emri + "</p>" +
+                        "</div>";
+                }
+                document.getElementById("content" + j).innerHTML += "<div class='divLloji'>" +
+                    "<img class='card-img-top' style='width:100px;height:100px;cursor: hand;' src='../../Content/appimages/add.png' />" +
+                    "<p class='card-text' align='center'>Shto makinë</p>" +
+                    "</div>";
+            } else {
+                document.getElementById("content" + j).innerHTML += "<div class='divLloji'>" +
+                    "<img class='card-img-top' style='width:100px;height:100px;cursor: hand;' src='../../Content/appimages/add.png' />" +
+                    "<p class='card-text' align='center'>Shto makinë</p>" +
+                    "</div>";
+            }
+        }
+    }
+
+    function gotoLlojiVeturesStock(id) {
+        alert(id);
+    }
+
+    function krijo() {
+        var emri = $("#emri").val();
+        var brendiID = @ViewBag.id;
+
+        var vetura = {
+            Emri: emri,
+            BrendiID: brendiID
+        }
+         
+        $.ajax({
+                url: '@Url.Action("CreateVetura", "Veturas")',
+                type: 'POST',
+                dataType: 'json',
+                data: { vetura: vetura},
+                success: function () { 
+                },
+                error: function (err) { 
+                    console.log(err.statusText);
+                    console.log(err.status); 
+                }
+            })
+    }
+</script>
+
+<style>
+    .divLloji {
+        float: left;
+        margin-left: 10px;
+        border-radius: 5px;
+        padding: 1px;
+        border: 0.4px solid #d6d6d6;
+        cursor: pointer;
+    }
+
+        .divLloji:hover {
+            box-shadow: 0px 2px 2px 0px;
+        }
+</style>
+
+
+<div class="row container col-md-12" style="background-color: darkgray;padding:40px;border-radius: 10px;">
+    <div class="col-md-3">
+        <h2>@ViewBag.Brendi.Emri</h2>
+        <img style="width:100px;height:100px;" src="~/Content/brendetimages/@ViewBag.Brendi.Foto" />
+    </div>
+    <div class="col-md-9">
+        <button onclick="" type="button" class="btn btn-success" style="float:right" data-toggle="modal" data-target="#myModal">Shto makinë</button>
+    </div>
+</div>
+<hr />
+<div class="container" style="margin-top:20px;">
+    <div class="panel-group" id="accordion">
+
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                <br />
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <h4>Vetura</h4>
+                    <hr /> 
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Emri</label>
+                        <div class="col-md-10">
+                            <input id="emri" type="text" class="form-control" />
+                        </div>
+                    </div> 
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input onclick="krijo()" type="submit" value="Krijo" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+
+    </div>
+</div>

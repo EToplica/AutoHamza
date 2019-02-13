@@ -1,0 +1,50 @@
+﻿@model IEnumerable<AutoHamza.Models.Model.Brendi>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<style>
+    .divBrend {
+        float: left;
+        margin-top:5px;
+        margin-left: 10px;
+        border-radius: 5px; 
+        padding:0.5px;
+        border: 0.4px solid #d6d6d6; 
+        cursor: pointer;
+    }
+
+        .divBrend:hover {
+            box-shadow: 0px 2px 2px 0px;
+        }
+
+    .imageBrand {
+        width: 100px;
+        height: 100px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+</style>
+
+<script>
+    function goToBradCars(BrendiID) { 
+        window.location.href = "http://localhost:62153/Brendis/Veturat/" +BrendiID; 
+}
+</script>
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<div class="container row">
+    @foreach (var item in Model)
+    {
+        <div class="divBrend" onclick="goToBradCars(@item.BrendiID)">
+            <h6 style="text-align:center; width:100px;height:20px;">@item.Emri</h6>
+            <img class="card-img-top imageBrand" src="~/Content/brendetimages/@item.Foto" />
+        </div>
+    }
+</div> 
